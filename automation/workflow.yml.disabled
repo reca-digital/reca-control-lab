@@ -1,0 +1,32 @@
+# INERT: GitHub ignores this file because it is outside .github/workflows.
+# Never move to default branch before owner approvals and security review.
+name: RECA synthetic executor (disabled)
+on:
+  issues:
+    types: [labeled]
+permissions: {}
+concurrency:
+  group: reca-control-one-issue
+  cancel-in-progress: false
+jobs:
+  admission:
+    if: >-
+      vars.RECA_AUTO_ENABLED == 'true' &&
+      github.run_attempt == 1 &&
+      github.repository == 'reca-digital/reca-control-lab' &&
+      github.event.label.name == 'codex-approved' &&
+      github.event.issue.number == fromJSON(vars.RECA_PILOT_ISSUE) &&
+      github.event.sender.id == fromJSON(vars.RECA_APPROVER_ID)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    permissions:
+      issues: read
+    steps:
+      - name: Admission placeholder
+        run: |
+          echo 'ADMISSION_ONLY_NO_MODEL_RUN'
+# Intentional: model and publisher jobs DO NOT EXIST YET.
+# Before adding them, implement immutable issue-body digest verification,
+# idempotent reservation, strict output allowlist, new-runner publishing,
+# job-level rerun guard in model AND publisher, and tested GitHub App access.
+# No API secrets or permissions:write are used here.
