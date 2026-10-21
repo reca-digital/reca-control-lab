@@ -3,7 +3,9 @@
   "owner_approved": false,
   "api_access_authorized": false,
   "immutable_receipts_verified": false,
-  "egress_isolation_verified": false,
+  "public_runner_reviewed": false,
+  "model_reviewed": false,
+  "cost_approved": false,
   "repository": "reca-digital/reca-control-lab",
   "output": "docs/pilot.md",
   "output_branch": "pilot/automatic-synthetic-001",
@@ -21,17 +23,14 @@
     "enabled": true,
     "trusted_reviewer_id": 343788291
   },
-  "max_model_calls": 2,
+  "max_worker_attempts": 2,
   "max_corrections": 1,
   "model": {
     "name": "OWNER_SELECTED_MODEL",
-    "cli_version": "OWNER_SELECTED_CLI_VERSION",
-    "image": "OWNER_SELECTED_IMAGE_AT_SHA256_DIGEST",
-    "argv": [
-      "OWNER_SELECTED_FIXED_CLI_ARGUMENTS"
-    ],
-    "max_output_tokens": 1500,
-    "network_adapter": "OWNER_REVIEWED_PROVIDER_ONLY_NETWORK"
+    "action_sha": "c05cfd74ad95c626cdf05c6685e62becc3bf7813",
+    "cli_version": "0.138.0",
+    "permission_profile": ":read-only",
+    "safety_strategy": "drop-sudo"
   },
   "production_repo_access": false,
   "deploy_authorized": false
