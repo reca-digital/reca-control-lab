@@ -1,12 +1,38 @@
 {
   "enabled": false,
+  "owner_approved": false,
+  "api_access_authorized": false,
+  "immutable_receipts_verified": false,
+  "egress_isolation_verified": false,
   "repository": "reca-digital/reca-control-lab",
-  "pilot_issue_number": 0,
-  "allowed_output": "docs/pilot.md",
+  "output": "docs/pilot.md",
+  "output_branch": "pilot/automatic-synthetic-001",
+  "base": "sandbox/reca-auto-control-setup",
+  "base_sha": "ee1b19999fa655f9c80db5597da1601ad269d093",
+  "controller_sha": "OWNER_SELECTED_IMMUTABLE_COMMIT",
+  "issue": {
+    "number": null,
+    "body_sha256": null,
+    "author_id": 343788291,
+    "approver_id": 343788291,
+    "preapproved": false
+  },
+  "correction": {
+    "enabled": true,
+    "trusted_reviewer_id": 343788291
+  },
   "max_model_calls": 2,
   "max_corrections": 1,
-  "api_access_authorized": false,
+  "model": {
+    "name": "OWNER_SELECTED_MODEL",
+    "cli_version": "OWNER_SELECTED_CLI_VERSION",
+    "image": "OWNER_SELECTED_IMAGE_AT_SHA256_DIGEST",
+    "argv": [
+      "OWNER_SELECTED_FIXED_CLI_ARGUMENTS"
+    ],
+    "max_output_tokens": 1500,
+    "network_adapter": "OWNER_REVIEWED_PROVIDER_ONLY_NETWORK"
+  },
   "production_repo_access": false,
-  "deploy_authorized": false,
-  "notes": "Inert placeholder; not a runnable controller or workflow."
+  "deploy_authorized": false
 }

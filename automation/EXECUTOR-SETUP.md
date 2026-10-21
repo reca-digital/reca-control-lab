@@ -1,23 +1,84 @@
-# Automatic executor — owner-controlled preparation
+# Automatic executor — disabled preparation
 
-**State: NOT ACTIVATED.** This setup branch contains an inert YAML template, not an executable workflow. No GitHub Actions or OpenAI API usage has been authorized.
+**NO-GO for execution. Review only.** Issue #4 work is confined to
+`setup/automatic-executor`, Draft PR #3. The template stays outside
+`.github/workflows`; policy remains disabled. No execution, keys, spending,
+merge, deploy or production access is authorized.
 
-## Boundary
-This public repository stores synthetic examples only. The executor must never receive content or credentials from private `reca-digital/demo`. The ChatGPT/Codex/Claude installations may separately have broad repository access; those installation privileges **must not be passed** to a runner. The runner's default `GITHUB_TOKEN` is scoped to this control repository.
+## Implementation
 
-## Before any first automated run
-1. Confirm ruleset `Protect main and sandbox` stays active and cannot be bypassed by workflow identities.
-2. Select exactly one **synthetic** Issue and pin its numeric ID, approved body SHA-256, and allowed GitHub approver ID.
-3. Approve a full implementation of admission + one-use reservation + narrowly-scoped publisher. The current inert YAML is only a scaffold, and must not be used for actual model work.
-4. Include `github.run_attempt == 1` and `RECA_AUTO_ENABLED == 'true'` in **every** job that invokes a model or publishes output. Prevent re-running only failed jobs without a fresh gate.
-5. A model job must have no repository write token/checkout/production credentials. Publisher must accept just one validated UTF-8 Markdown document in `docs/pilot.md`, never a model-specified command/path or patch.
-6. Pin exact SHA of every third-party Action and exact compatible Codex CLI/model versions. Separate environment-scoped OpenAI API key belongs to this **synthetic-only** workflow; do not use Desktop session auth.
-7. Enforce a single execution and one revision, bounded job duration and owner-approved potential expense. Time limits **are not** a hard USD spending cap.
-8. Explicitly authorize adding a workflow file to protected default branch through an approved PR. Adding it only in this setup branch will not trigger `issues.labeled`.
-9. Require separate owner approval before setting `RECA_AUTO_ENABLED=true` and applying the `codex-approved` label.
+- Each controller entry point (gate, model, publisher) independently rejects
+  both local and live Actions run attempts other than 1. Job-level guards
+  also reject reruns, including failed-job reruns that reuse a successful gate.
+- Live admission checks the public repository, immutable code/workflow pins,
+  trusted numeric actor/author 343788291, one exact approved Issue body SHA-256,
+  and the sole label `synthetic-executor-approved`. Extra labels, edited bodies,
+  other users/events, stale base/head commits and duplicates fail closed.
+- The policy does not select any Issue. Issue #1 excludes execution and is not
+  approval. Owner selection of a synthetic Issue and digest remains a blocker.
+- Gate atomically creates a global annotated receipt tag before the worker.
+  Separate fixed initial/correction names cap lifetime attempts at two.
+  Claims bind run/attempt, input digest, controller, parent and review ID/digest.
+  Collision or ambiguous failure stops permanently; receipts are never deleted,
+  updated or reclaimed by this controller.
+- Model rechecks live input/receipt on a fresh runner with read-only GitHub
+  permissions. Its non-root container receives only request/output mounts and
+  a future scoped provider key: no checkout, GitHub token, Actions runtime token,
+  host home/socket or project credentials. Image/CLI/model/arguments are owner
+  placeholders. Fixed argv is used; generated commands/patches are never run.
+- Publisher validates only a regular UTF-8 `pilot.md` artifact from the current
+  run (<=12,000 bytes). Controls, HTML, code fences, links and obvious key-like
+  text are rejected. This is a conservative filter, not proof of semantic safety.
+  The Git tree uses only `docs/pilot.md`; a one-file diff is checked before
+  updating the fixed `pilot/automatic-synthetic-001` branch.
+- The only created PR is Draft into `sandbox/reca-auto-control-setup`.
+  Initial branch creation is create-only. The correction uses a non-force ref
+  update with the expected head as sole parent. No protected target ref is
+  written; no merge, bypass, branch protection change or follow-on task exists.
+- Initial completion records the sole PR/head. One COMMENTED review by the
+  trusted numeric user at that exact head can consume the correction. The
+  live review must match event text and its reserved ID/digest. Other review
+  states/users or moved heads stop. Publication is reserved before mutation;
+  partial branch/PR/API failure burns the phase and needs human inspection.
 
-## Review path
-The existing chat can read the resulting PR when asked but **does not automatically wake up** on GitHub events. First reviewer is manually invoked. Event-driven reviewer would need a separate authorized handler.
+## Blocking owner decisions before any separately authorized activation
 
-## Current exit
-Ready for review of setup approach; **NOT READY TO RUN**. Do not merge, deploy, activate, or call paid APIs.
+1. Leave all approval flags false. Select and explicitly preapprove one
+   synthetic Issue, exact UTF-8 digest and numeric identity. Confirm no
+   inherited secrets or private/project access reach runners.
+2. Pin reviewed controller code in both `policy.controller_sha` and variable
+   `RECA_CONTROLLER_SHA`. Policy is loaded separately from the workflow commit
+   at `github.sha`, rather than from the old controller checkout. After a
+   later workflow/policy commit exists, pin it in `RECA_WORKFLOW_SHA`.
+   This avoids a self-referential commit hash; variables require owner control.
+3. Protect `reca-auto-exec-001-*` receipt tags against update/deletion, including
+   by the automation identity. Preserve the active `Protect main and sandbox`
+   ruleset without bypass. Confirm create-only pilot/receipt and Draft PR rights.
+   Receipt immutability and runner permissions have not been runtime verified.
+4. Select an immutable image digest, exact CLI/version, fixed arguments and
+   compatible model. Adapter contract: read `/input/request.json`, write only
+   `/output/pilot.md`, at most one model request, retries disabled, requested
+   output <=1,500 tokens. Adapter request-count behavior is still unverified;
+   the supervisor alone cannot enforce provider request counts.
+5. Preload the image (`--pull=never`). Provision and independently verify
+   `reca-synthetic-egress`: provider-only traffic, denying GitHub, private hosts,
+   runner host, metadata and lateral access. A Docker network name is not an
+   egress firewall. No network provisioning occurs here; its approval stays false.
+6. Only after separate permission, replace the empty `SYNTHETIC_MODEL_KEY`
+   slot with a synthetic-only provider credential in the model job alone.
+   Never use Desktop authentication or broad project credentials.
+7. Limits: two worker attempts maximum, 120 seconds each inside a four-minute
+   job, <=12,000 output bytes and <=1,500 requested output tokens per attempt.
+   Input/context tokens, retries, provider behavior and USD exposure remain
+   unmeasured. Timeouts/token requests are not hard spending caps. Require
+   provider-enforced quotas and explicitly accepted spending bounds.
+8. Separately review pinned Actions, artifact provenance, Node/Docker/runner
+   compatibility, isolation, receipt protection and every rerun variant before
+   proposing activation through the normal protected-branch process.
+
+## Verification
+
+Syntax/static review only; no new tests or CI runs. Model/CLI placeholders,
+runtime, provider request bounds, cost controls, tag protections and actual
+network isolation are unverified. Every Action uses a full commit SHA.
+**GO: review the disabled preparation. NO-GO: run, enable, merge or spend.**

@@ -1,32 +1,134 @@
-# INERT: GitHub ignores this file because it is outside .github/workflows.
-# Never move to default branch before owner approvals and security review.
-name: RECA synthetic executor (disabled)
+# INERT: deliberately outside .github/workflows. No workflow_dispatch.
+# Activation, approval refs, billing and network provisioning are separate work.
+name: Synthetic one-issue executor (DISABLED)
 on:
   issues:
     types: [labeled]
+  pull_request_review:
+    types: [submitted]
 permissions: {}
 concurrency:
-  group: reca-control-one-issue
+  group: synthetic-executor-one-lifetime
   cancel-in-progress: false
+env:
+  RECA_AUTO_ENABLED: ${{ vars.RECA_AUTO_ENABLED }}
+  RECA_CONTROLLER_SHA: ${{ vars.RECA_CONTROLLER_SHA }}
+  RECA_WORKFLOW_SHA: ${{ vars.RECA_WORKFLOW_SHA }}
+  RECA_POLICY_PATH: approved-policy/automation/policy.json
 jobs:
-  admission:
+  gate:
     if: >-
       vars.RECA_AUTO_ENABLED == 'true' &&
       github.run_attempt == 1 &&
       github.repository == 'reca-digital/reca-control-lab' &&
-      github.event.label.name == 'codex-approved' &&
-      github.event.issue.number == fromJSON(vars.RECA_PILOT_ISSUE) &&
-      github.event.sender.id == fromJSON(vars.RECA_APPROVER_ID)
+      github.actor_id == '343788291'
     runs-on: ubuntu-24.04
-    timeout-minutes: 2
+    timeout-minutes: 3
     permissions:
+      contents: write
       issues: read
+      pull-requests: read
+      actions: read
     steps:
-      - name: Admission placeholder
-        run: |
-          echo 'ADMISSION_ONLY_NO_MODEL_RUN'
-# Intentional: model and publisher jobs DO NOT EXIST YET.
-# Before adding them, implement immutable issue-body digest verification,
-# idempotent reservation, strict output allowlist, new-runner publishing,
-# job-level rerun guard in model AND publisher, and tested GitHub App access.
-# No API secrets or permissions:write are used here.
+      - name: Load pinned public controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: reca-digital/reca-control-lab
+          ref: ${{ vars.RECA_CONTROLLER_SHA }}
+          path: controller-source
+          persist-credentials: false
+      - name: Load policy from this workflow commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: reca-digital/reca-control-lab
+          ref: ${{ github.sha }}
+          path: approved-policy
+          persist-credentials: false
+      - name: Validate live event and consume lifetime attempt before model
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node controller-source/automation/controller.mjs gate
+  model:
+    needs: gate
+    # Do not rely on a successful prior gate: failed-job reruns reuse its result.
+    if: >-
+      needs.gate.result == 'success' &&
+      vars.RECA_AUTO_ENABLED == 'true' &&
+      github.run_attempt == 1 &&
+      github.repository == 'reca-digital/reca-control-lab' &&
+      github.actor_id == '343788291'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+      actions: read
+    steps:
+      - name: Load pinned public controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: reca-digital/reca-control-lab
+          ref: ${{ vars.RECA_CONTROLLER_SHA }}
+          path: controller-source
+          persist-credentials: false
+      - name: Load approved policy
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: reca-digital/reca-control-lab
+          ref: ${{ github.sha }}
+          path: approved-policy
+          persist-credentials: false
+      - name: Recheck run attempt, live payload and reservation; isolated worker
+        env:
+          GH_TOKEN: ${{ github.token }} # READ ONLY; not passed into container
+          SYNTHETIC_MODEL_KEY: '' # BLOCKER: owner-scoped future credential, never Desktop auth
+        run: node controller-source/automation/controller.mjs model
+      - name: Upload only validated document; no overwrite
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: synthetic-${{ github.run_id }}-attempt-1
+          path: model-output/pilot.md
+          if-no-files-found: error
+          retention-days: 1
+          overwrite: false
+  publisher:
+    needs: [gate, model]
+    if: >-
+      needs.gate.result == 'success' &&
+      needs.model.result == 'success' &&
+      vars.RECA_AUTO_ENABLED == 'true' &&
+      github.run_attempt == 1 &&
+      github.repository == 'reca-digital/reca-control-lab' &&
+      github.actor_id == '343788291'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: write
+      issues: read
+      pull-requests: write
+      actions: read
+    steps:
+      - name: Load pinned public controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: reca-digital/reca-control-lab
+          ref: ${{ vars.RECA_CONTROLLER_SHA }}
+          path: controller-source
+          persist-credentials: false
+      - name: Load approved policy
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: reca-digital/reca-control-lab
+          ref: ${{ github.sha }}
+          path: approved-policy
+          persist-credentials: false
+      - name: Download this run's immutable document artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: synthetic-${{ github.run_id }}-attempt-1
+          path: model-output
+      - name: Recheck run attempt, payload and head; consume publication once
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node controller-source/automation/controller.mjs publisher
