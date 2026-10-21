@@ -1,0 +1,12 @@
+{
+  "enabled": false,
+  "repository": "reca-digital/reca-control-lab",
+  "pilot_issue_number": 0,
+  "allowed_output": "docs/pilot.md",
+  "max_model_calls": 2,
+  "max_corrections": 1,
+  "api_access_authorized": false,
+  "production_repo_access": false,
+  "deploy_authorized": false,
+  "notes": "Inert placeholder; not a runnable controller or workflow."
+}
