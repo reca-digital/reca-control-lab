@@ -1,0 +1,44 @@
+# One-off permission probe. Manually triggered; no model, secret or RECA policy changes.
+name: Verify immutable receipt tag creation (free probe)
+on:
+  workflow_dispatch:
+permissions: {}
+jobs:
+  receipt-tag-probe:
+    if: github.repository == 'reca-digital/reca-control-lab' && github.actor_id == '343788291'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: write
+    steps:
+      - name: Create a separate annotated test tag and verify it is readable
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          const {GH_TOKEN: token, REPO: repo, SHA: sha, RUN_ID: id} = process.env;
+          if (repo !== 'reca-digital/reca-control-lab' || !/^[a-f0-9]{40}$/.test(sha) || !/^[0-9]+$/.test(id) || !token) throw Error('Invalid trusted context');
+          const name = 'reca-auto-exec-001-permission-probe-' + id;
+          const base = 'https://api.github.com/repos/' + repo;
+          async function call(path, method = 'GET', body) {
+            const response = await fetch(base + path, {method, redirect: 'error', headers: {
+              Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28', 'Content-Type':'application/json'
+            }, body: body ? JSON.stringify(body) : undefined});
+            if (!response.ok) throw Error(method + ' ' + path + ' failed: HTTP ' + response.status);
+            return response.json();
+          }
+          const tag = await call('/git/tags','POST',{tag:name,message:JSON.stringify({purpose:'permission-probe-only',run:id,source:sha}),object:sha,type:'commit'});
+          await call('/git/refs','POST',{ref:'refs/tags/' + name,sha:tag.sha});
+          const ref = await call('/git/ref/tags/' + name);
+          if (ref.object.type !== 'tag' || ref.object.sha !== tag.sha) throw Error('Readback mismatch');
+          const annotated = await call('/git/tags/' + tag.sha);
+          if (annotated.object.sha !== sha || annotated.object.type !== 'commit') throw Error('Tag target mismatch');
+          console.log('PASS: annotated protected receipt-pattern tag created and verified: ' + name);
+          console.log('No tag update/deletion attempted. No Codex/API key used.');
+          NODE
