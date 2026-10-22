@@ -17,7 +17,7 @@
     "body_sha256": "90c229bdb39de7eb47ae4f78e80f755baa178707eb6ed1fa3fbf67f9868988b9",
     "author_id": 343788291,
     "approver_id": 343788291,
-    "preapproved": false
+    "preapproved": true
   },
   "correction": {
     "enabled": false,
