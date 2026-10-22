@@ -38,7 +38,9 @@ export async function publishSandboxDraft({client,repoDir,base,head,payload,requ
   const commit=await client.createCommit({parent:base,tree,message:'sandbox: code review '+requestId});
   if(!SHA.test(commit))abort('Invalid commit response');
   const diff=await client.compare(base,commit);
+  const changedPaths=Array.isArray(diff)?diff.map(f=>f?.path):[];
   if(!Array.isArray(diff)||diff.length!==files.length||
+    new Set(changedPaths).size!==files.length||
     diff.some(f=>!exact(f,['path','status'])||
       !['added','modified'].includes(f.status)||!files.some(x=>equal(x.path,f.path))))
     abort('Remote compare differs from approved file set');
