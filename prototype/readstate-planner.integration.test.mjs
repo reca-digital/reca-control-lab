@@ -23,7 +23,7 @@ function setup() {
     [prefix]:{full_name:'reca-digital/reca-control-lab',private:false,archived:false},
     [prefix+'/git/ref/heads/sandbox/reca-auto-control-setup']:{ref:'refs/heads/sandbox/reca-auto-control-setup',object:{sha:base}},
     [prefix+'/git/ref/heads/prototype/review-only-47']:null,
-    [prefix+'/pulls?state=all&head=reca-digital%3Aprototype/review-only-47&per_page=100':[]
+    [prefix+'/pulls?state=all&head=reca-digital%3Aprototype/review-only-47&per_page=100']:[]
   };
   const request=async(method,url)=>{assert.equal(method,'GET');if(!(url in replies))throw Error('Unexpected path');return replies[url];};
   const clean=()=>rmSync(dir,{recursive:true,force:true});
