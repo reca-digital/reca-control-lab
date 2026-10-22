@@ -11,7 +11,7 @@
   "output_branch": "pilot/automatic-synthetic-002",
   "base": "sandbox/reca-auto-control-setup",
   "base_sha": "0400d8d0540cb1345c8bdfc03a7455e17fe1d5d2",
-  "controller_sha": "28b86b2a8812ca03c1fb80f9ff5488c12a3bb8d2",
+  "controller_sha": "be062db635160e30ce6fd9f5ac983d3d92fb140b",
   "issue": {
     "number": 19,
     "body_sha256": "6072e5365ad05198de5fe7972da0ff033394afbbd1be7a8db7166a4e22f2811b",
