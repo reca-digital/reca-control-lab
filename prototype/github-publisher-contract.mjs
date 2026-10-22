@@ -11,7 +11,7 @@ function record(v,keys) {
     Object.keys(v).sort().join('|')===[...keys].sort().join('|');
 }
 export function publisherRequest(kind,data) {
-  if(typeof kind!=='string'||!record(data,(
+  if(!['blob','tree','commit','compare','branch','pr'].includes(kind)||!record(data,(
     {blob:['content'],tree:['baseTree','entries'],commit:['parent','tree','message'],
      compare:['base','head'],branch:['name','sha'],pr:['head','title','body']}[kind]||[]
   )))fail('Unrecognized operation or request shape');
