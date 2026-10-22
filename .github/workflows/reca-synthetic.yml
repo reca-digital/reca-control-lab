@@ -19,7 +19,6 @@ env:
 jobs:
   gate:
     if: >-
-      false &&
       vars.RECA_AUTO_ENABLED == 'true' &&
       github.run_attempt == 1 &&
       github.repository == 'reca-digital/reca-control-lab' &&
@@ -54,7 +53,6 @@ jobs:
     needs: gate
     # Do not rely on a successful prior gate: failed-job reruns reuse its result.
     if: >-
-      false &&
       needs.gate.result == 'success' &&
       vars.RECA_AUTO_ENABLED == 'true' &&
       github.run_attempt == 1 &&
@@ -132,7 +130,6 @@ jobs:
   publisher:
     needs: [gate, model]
     if: >-
-      false &&
       needs.gate.result == 'success' &&
       needs.model.result == 'success' &&
       vars.RECA_AUTO_ENABLED == 'true' &&
