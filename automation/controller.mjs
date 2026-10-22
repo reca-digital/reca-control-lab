@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 
 const REPO = 'reca-digital/reca-control-lab';
 const BASE = 'sandbox/reca-auto-control-setup';
-const BRANCH = 'pilot/automatic-synthetic-001';
+const BRANCH = 'pilot/automatic-synthetic-002';
 const OUTPUT = 'docs/pilot.md';
 const LABEL = 'synthetic-executor-approved';
 const OWNER = 343788291;
@@ -47,7 +47,7 @@ async function api(route, method = 'GET', body, missing = false) {
 }
 
 const refPath = name => '/git/ref/' + name;
-const receiptName = kind => 'tags/reca-auto-exec-001-' + phase + '-' + kind;
+const receiptName = kind => 'tags/reca-auto-exec-002-' + phase + '-' + kind;
 function claims() {
   return {
     run: env.GITHUB_RUN_ID, attempt: 1, phase, issue: p.issue.number,
