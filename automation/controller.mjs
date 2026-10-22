@@ -28,7 +28,9 @@ let reviewId = null;
 let reviewHash = null;
 
 async function api(route, method = 'GET', body, missing = false) {
-  requireThat((route === '' || route.startsWith('/')) && !route.includes('..'), 'Invalid API route');
+  const comparison = /^\/compare\/[a-f0-9]{40}\.\.\.[a-f0-9]{40}$/.test(route);
+  requireThat((route === '' || route.startsWith('/')) &&
+    (!route.includes('..') || comparison), 'Invalid API route');
   const r = await fetch('https://api.github.com/repos/' + REPO + route, {
     method, redirect: 'error', signal: AbortSignal.timeout(20000),
     headers: {
