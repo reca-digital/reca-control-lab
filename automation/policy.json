@@ -1,7 +1,7 @@
 {
   "enabled": false,
-  "owner_approved": false,
-  "api_access_authorized": false,
+  "owner_approved": true,
+  "api_access_authorized": true,
   "immutable_receipts_verified": false,
   "public_runner_reviewed": false,
   "model_reviewed": false,
