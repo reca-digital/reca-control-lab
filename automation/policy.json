@@ -1,11 +1,11 @@
 {
-  "enabled": true,
-  "owner_approved": true,
-  "api_access_authorized": true,
-  "immutable_receipts_verified": true,
-  "public_runner_reviewed": true,
-  "model_reviewed": true,
-  "cost_approved": true,
+  "enabled": false,
+  "owner_approved": false,
+  "api_access_authorized": false,
+  "immutable_receipts_verified": false,
+  "public_runner_reviewed": false,
+  "model_reviewed": false,
+  "cost_approved": false,
   "repository": "reca-digital/reca-control-lab",
   "output": "docs/pilot.md",
   "output_branch": "pilot/automatic-synthetic-001",
@@ -17,7 +17,7 @@
     "body_sha256": "90c229bdb39de7eb47ae4f78e80f755baa178707eb6ed1fa3fbf67f9868988b9",
     "author_id": 343788291,
     "approver_id": 343788291,
-    "preapproved": true
+    "preapproved": false
   },
   "correction": {
     "enabled": false,
