@@ -8,13 +8,13 @@
   "cost_approved": false,
   "repository": "reca-digital/reca-control-lab",
   "output": "docs/pilot.md",
-  "output_branch": "pilot/automatic-synthetic-001",
+  "output_branch": "pilot/automatic-synthetic-002",
   "base": "sandbox/reca-auto-control-setup",
-  "base_sha": "ee1b19999fa655f9c80db5597da1601ad269d093",
+  "base_sha": "0400d8d0540cb1345c8bdfc03a7455e17fe1d5d2",
   "controller_sha": "28b86b2a8812ca03c1fb80f9ff5488c12a3bb8d2",
   "issue": {
-    "number": 6,
-    "body_sha256": "90c229bdb39de7eb47ae4f78e80f755baa178707eb6ed1fa3fbf67f9868988b9",
+    "number": 19,
+    "body_sha256": "6072e5365ad05198de5fe7972da0ff033394afbbd1be7a8db7166a4e22f2811b",
     "author_id": 343788291,
     "approver_id": 343788291,
     "preapproved": false
